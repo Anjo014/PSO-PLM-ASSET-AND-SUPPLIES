@@ -1,232 +1,114 @@
-Dompdf
-======
+<p style="text-align: center"><img src="https://github.com/FakerPHP/Artwork/raw/main/src/socialcard.png" alt="Social card of FakerPHP"></p>
 
-[![Build Status](https://github.com/dompdf/dompdf/actions/workflows/test.yml/badge.svg)](https://github.com/dompdf/dompdf/actions/workflows/test.yml)
-[![Latest Release](https://poser.pugx.org/dompdf/dompdf/v/stable.png)](https://packagist.org/packages/dompdf/dompdf)
-[![Total Downloads](https://poser.pugx.org/dompdf/dompdf/downloads.png)](https://packagist.org/packages/dompdf/dompdf)
-[![License](https://poser.pugx.org/dompdf/dompdf/license.png)](https://packagist.org/packages/dompdf/dompdf)
- 
-**Dompdf is an HTML to PDF converter**
+# Faker
 
-At its heart, dompdf is (mostly) a [CSS 2.1](http://www.w3.org/TR/CSS2/) compliant
-HTML layout and rendering engine written in PHP. It is a style-driven renderer:
-it will download and read external stylesheets, inline style tags, and the style
-attributes of individual HTML elements. It also supports most presentational
-HTML attributes.
+[![Packagist Downloads](https://img.shields.io/packagist/dm/FakerPHP/Faker)](https://packagist.org/packages/fakerphp/faker)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/FakerPHP/Faker/Tests/main)](https://github.com/FakerPHP/Faker/actions)
+[![Type Coverage](https://shepherd.dev/github/FakerPHP/Faker/coverage.svg)](https://shepherd.dev/github/FakerPHP/Faker)
+[![Code Coverage](https://codecov.io/gh/FakerPHP/Faker/branch/main/graph/badge.svg)](https://codecov.io/gh/FakerPHP/Faker)
 
-*This document applies to the latest stable code which may not reflect the current 
-release. For released code please
-[navigate to the appropriate tag](https://github.com/dompdf/dompdf/tags).*
+Faker is a PHP library that generates fake data for you. Whether you need to bootstrap your database, create good-looking XML documents, fill-in your persistence to stress test it, or anonymize data taken from a production service, Faker is for you.
 
-----
+It's heavily inspired by Perl's [Data::Faker](https://metacpan.org/pod/Data::Faker), and by Ruby's [Faker](https://rubygems.org/gems/faker).
 
-**Check out the [demo](http://eclecticgeek.com/dompdf/debug.php) and ask any
-question on [StackOverflow](https://stackoverflow.com/questions/tagged/dompdf) or
-in [Discussions](https://github.com/dompdf/dompdf/discussions).**
+## Getting Started
 
-Follow us on [![Twitter](http://twitter-badges.s3.amazonaws.com/twitter-a.png)](http://www.twitter.com/dompdf).
+### Installation
 
----
+Faker requires PHP >= 7.4.
 
+```shell
+composer require fakerphp/faker
+```
 
+### Documentation
 
-## Features
+Full documentation can be found over on [fakerphp.github.io](https://fakerphp.github.io).
 
- * Handles most CSS 2.1 and a few CSS3 properties, including @import, @media &
-   @page rules
- * Supports most presentational HTML 4.0 attributes
- * Supports external stylesheets, either local or through http/ftp (via
-   fopen-wrappers)
- * Supports complex tables, including row & column spans, separate & collapsed
-   border models, individual cell styling
- * Image support (gif, png (8, 24 and 32 bit with alpha channel), bmp & jpeg)
- * No dependencies on external PDF libraries, thanks to the R&OS PDF class
- * Inline PHP support
- * Basic SVG support (see "Limitations" below)
- 
-## Requirements
+### Basic Usage
 
- * PHP version 7.1 or higher
- * DOM extension
- * MBString extension
- * php-font-lib
- * php-svg-lib
- 
-Note that some required dependencies may have further dependencies 
-(notably php-svg-lib requires sabberworm/php-css-parser).
+Use `Faker\Factory::create()` to create and initialize a Faker generator, which can generate data by accessing methods named after the type of data you want.
 
-### Recommendations
+```php
+<?php
+require_once 'vendor/autoload.php';
 
- * OPcache (OPcache, XCache, APC, etc.): improves performance
- * GD (for image processing)
- * IMagick or GMagick extension: improves image processing performance
+// use the factory to create a Faker\Generator instance
+$faker = Faker\Factory::create();
+// generate data by calling methods
+echo $faker->name();
+// 'Vince Sporer'
+echo $faker->email();
+// 'walter.sophia@hotmail.com'
+echo $faker->text();
+// 'Numquam ut mollitia at consequuntur inventore dolorem.'
+```
 
-Visit the wiki for more information:
-https://github.com/dompdf/dompdf/wiki/Requirements
+Each call to `$faker->name()` yields a different (random) result. This is because Faker uses `__call()` magic, and forwards `Faker\Generator->$method()` calls to `Faker\Generator->format($method, $attributes)`.
 
-## About Fonts & Character Encoding
+```php
+<?php
+for ($i = 0; $i < 3; $i++) {
+    echo $faker->name() . "\n";
+}
 
-PDF documents internally support the following fonts: Helvetica, Times-Roman,
-Courier, Zapf-Dingbats, & Symbol. These fonts only support Windows ANSI
-encoding. In order for a PDF to display characters that are not available in
-Windows ANSI, you must supply an external font. Dompdf will embed any referenced
-font in the PDF so long as it has been pre-loaded or is accessible to dompdf and
-reference in CSS @font-face rules. See the
-[font overview](https://github.com/dompdf/dompdf/wiki/About-Fonts-and-Character-Encoding)
-for more information on how to use fonts.
+// 'Cyrus Boyle'
+// 'Alena Cummerata'
+// 'Orlo Bergstrom'
+```
 
-The [DejaVu TrueType fonts](https://dejavu-fonts.github.io/) have been pre-installed
-to give dompdf decent Unicode character coverage by default. To use the DejaVu
-fonts reference the font in your stylesheet, e.g. `body { font-family: DejaVu
-Sans; }` (for DejaVu Sans). The following DejaVu 2.34 fonts are available:
-DejaVu Sans, DejaVu Serif, and DejaVu Sans Mono.
+## Automated refactoring
 
-## Easy Installation
+If you already used this library with its properties, they are now deprecated and needs to be replaced by their equivalent methods.
 
-### Install with composer
+You can use the provided [Rector](https://github.com/rectorphp/rector) config file to automate the work.
 
-To install with [Composer](https://getcomposer.org/), simply require the
-latest version of this package.
+Run
 
 ```bash
-composer require dompdf/dompdf
+composer require --dev rector/rector
 ```
 
-Make sure that the autoload file from Composer is loaded.
+to install `rector/rector`.
+
+Run
+
+```bash
+vendor/bin/rector process src/ --config vendor/fakerphp/faker/rector-migrate.php
+```
+
+to run `rector/rector`.
+
+*Note:* do not forget to replace `src/` with the path to your source directory.
+
+Alternatively, import the configuration in your `rector.php` file:
 
 ```php
-// somewhere early in your project's loading, require the Composer autoloader
-// see: http://getcomposer.org/doc/00-intro.md
-require 'vendor/autoload.php';
+<?php
 
+declare(strict_types=1);
+
+use Rector\Config;
+
+return static function (Config\RectorConfig $rectorConfig): void {
+    $rectorConfig->import('vendor/fakerphp/faker/rector-migrate.php');
+};
 ```
 
-### Download and install
+## License
 
-Download a packaged archive of dompdf and extract it into the 
-directory where dompdf will reside
+Faker is released under the MIT License. See [`LICENSE`](LICENSE) for details.
 
- * You can download stable copies of dompdf from
-   https://github.com/dompdf/dompdf/releases
- * Or download a nightly (the latest, unreleased code) from
-   http://eclecticgeek.com/dompdf
+## Backward compatibility promise
 
-Use the packaged release autoloader to load dompdf, libraries,
-and helper functions in your PHP:
+Faker is using [Semver](https://semver.org/). This means that versions are tagged
+with MAJOR.MINOR.PATCH. Only a new major version will be allowed to break backward
+compatibility (BC).
 
-```php
-// include autoloader
-require_once 'dompdf/autoload.inc.php';
-```
+Classes marked as `@experimental` or `@internal` are not included in our backward compatibility promise.
+You are also not guaranteed that the value returned from a method is always the
+same. You are guaranteed that the data type will not change.
 
-Note: packaged releases are named according using semantic
-versioning (_dompdf_MAJOR-MINOR-PATCH.zip_). So the 1.0.0 
-release would be dompdf_1-0-0.zip. This is the only download
-that includes the autoloader for Dompdf and all its dependencies.
-
-### Install with git
-
-From the command line, switch to the directory where dompdf will
-reside and run the following commands:
-
-```sh
-git clone https://github.com/dompdf/dompdf.git
-cd dompdf/lib
-
-git clone https://github.com/PhenX/php-font-lib.git php-font-lib
-cd php-font-lib
-git checkout 0.5.1
-cd ..
-
-git clone https://github.com/PhenX/php-svg-lib.git php-svg-lib
-cd php-svg-lib
-git checkout v0.3.2
-cd ..
-
-git clone https://github.com/sabberworm/PHP-CSS-Parser.git php-css-parser
-cd php-css-parser
-git checkout 8.1.0
-```
-
-Require dompdf and it's dependencies in your PHP.
-For details see the [autoloader in the utils project](https://github.com/dompdf/utils/blob/master/autoload.inc.php).
-
-## Quick Start
-
-Just pass your HTML in to dompdf and stream the output:
-
-```php
-// reference the Dompdf namespace
-use Dompdf\Dompdf;
-
-// instantiate and use the dompdf class
-$dompdf = new Dompdf();
-$dompdf->loadHtml('hello world');
-
-// (Optional) Setup the paper size and orientation
-$dompdf->setPaper('A4', 'landscape');
-
-// Render the HTML as PDF
-$dompdf->render();
-
-// Output the generated PDF to Browser
-$dompdf->stream();
-```
-
-### Setting Options
-
-Set options during dompdf instantiation:
-
-```php
-use Dompdf\Dompdf;
-use Dompdf\Options;
-
-$options = new Options();
-$options->set('defaultFont', 'Courier');
-$dompdf = new Dompdf($options);
-```
-
-or at run time
-
-```php
-use Dompdf\Dompdf;
-
-$dompdf = new Dompdf();
-$options = $dompdf->getOptions();
-$options->setDefaultFont('Courier');
-$dompdf->setOptions($options);
-```
-
-See [Dompdf\Options](src/Options.php) for a list of available options.
-
-### Resource Reference Requirements
-
-In order to protect potentially sensitive information Dompdf imposes 
-restrictions on files referenced from the local file system or the web. 
-
-Files accessed through web-based protocols have the following requirements:
- * The Dompdf option "isRemoteEnabled" must be set to "true"
- * PHP must either have the curl extension enabled or the 
-   allow_url_fopen setting set to true
-   
-Files accessed through the local file system have the following requirement:
- * The file must fall within the path(s) specified for the Dompdf "chroot" option
-
-## Limitations (Known Issues)
-
- * Table cells are not pageable, meaning a table row must fit on a single page.
- * Elements are rendered on the active page when they are parsed.
- * Embedding "raw" SVG's (`<svg><path...></svg>`) isn't working yet, you need to
-   either link to an external SVG file, or use a DataURI like this:
-     ```php
-     $html = '<img src="data:image/svg+xml;base64,' . base64_encode($svg) . '" ...>';
-     ```
-     Watch https://github.com/dompdf/dompdf/issues/320 for progress
- * Does not support CSS flexbox.
- * Does not support CSS Grid.
----
-
-[![Donate button](https://www.paypal.com/en_US/i/btn/btn_donate_SM.gif)](http://goo.gl/DSvWf)
-
-*If you find this project useful, please consider making a donation.
-Any funds donated will be used to help further development on this project.)*
+PHP 8 introduced [named arguments](https://wiki.php.net/rfc/named_params), which
+increased the cost and reduces flexibility for package maintainers. The names of the
+arguments for methods in Faker is not included in our BC promise.
